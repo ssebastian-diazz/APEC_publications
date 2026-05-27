@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>APEC Publications Explorer</title>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-copy">
+        <p class="eyebrow">APEC Publications Archive</p>
+        <h1>APEC Publications Explorer</h1>
+        <p class="subtitle">
+          A structured view of APEC publications by type, date and recurring policy themes.
+        </p>
+      </div>
+
+      <div class="header-meta">
+        <span>Public dataset</span>
+        <span>1993–2026</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="method-note">
+      <strong>Methodological note.</strong>
+      This explorer is built from APEC’s public publications endpoint. The endpoint reported
+      2,919 publications; this dataset recovered and cleaned 2,883 records, giving an estimated
+      coverage of 98.77%.
+    </section>
+
+    <section class="kpi-grid" id="kpiGrid" aria-label="Summary indicators">
+      <article class="kpi-card">
+        <span class="kpi-label">Total publications</span>
+        <strong id="kpiTotal">—</strong>
+      </article>
+
+      <article class="kpi-card">
+        <span class="kpi-label">Reports</span>
+        <strong id="kpiReports">—</strong>
+      </article>
+
+      <article class="kpi-card">
+        <span class="kpi-label">Proceedings</span>
+        <strong id="kpiProceedings">—</strong>
+      </article>
+
+      <article class="kpi-card">
+        <span class="kpi-label">Manuals</span>
+        <strong id="kpiManuals">—</strong>
+      </article>
+
+      <article class="kpi-card">
+        <span class="kpi-label">Year range</span>
+        <strong id="kpiYears">—</strong>
+      </article>
+    </section>
+
+    <section class="panel filters-panel" aria-label="Filters">
+      <div class="panel-heading">
+        <h2>Filters</h2>
+        <button id="resetFilters" class="secondary-button" type="button">Reset</button>
+      </div>
+
+      <div class="filters-grid">
+        <label for="typeFilter">
+          Type
+          <select id="typeFilter">
+            <option value="">All types</option>
+          </select>
+        </label>
+
+        <label for="yearFilter">
+          Year
+          <select id="yearFilter">
+            <option value="">All years</option>
+          </select>
+        </label>
+
+        <label for="monthFilter">
+          Month
+          <select id="monthFilter">
+            <option value="">All months</option>
+          </select>
+        </label>
+
+        <label for="sortFilter">
+          Sort
+          <select id="sortFilter">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="title_az">Title A–Z</option>
+            <option value="title_za">Title Z–A</option>
+          </select>
+        </label>
+
+        <label for="searchInput" class="search-label">
+          Keyword search
+          <input id="searchInput" type="search" placeholder="Search title, type or topic..." />
+        </label>
+      </div>
+    </section>
+
+    <section class="charts-grid" aria-label="Publication charts">
+      <article class="panel chart-card chart-card-wide">
+        <div class="panel-heading">
+          <h2>Publications by year</h2>
+        </div>
+        <div class="chart-frame chart-frame-wide">
+          <canvas id="yearChart" width="900" height="240"></canvas>
+        </div>
+      </article>
+
+      <article class="panel chart-card chart-card-small">
+        <div class="panel-heading">
+          <h2>Publications by type</h2>
+        </div>
+        <div class="chart-frame chart-frame-small">
+          <canvas id="typeChart" width="420" height="220"></canvas>
+        </div>
+      </article>
+
+      <article class="panel chart-card chart-card-wide">
+        <div class="panel-heading">
+          <h2>Type evolution over time</h2>
+        </div>
+        <div class="chart-frame chart-frame-wide">
+          <canvas id="typeYearChart" width="900" height="250"></canvas>
+        </div>
+      </article>
+
+      <article class="panel chart-card chart-card-small">
+        <div class="panel-heading">
+          <h2>Monthly rhythm</h2>
+        </div>
+        <div class="chart-frame chart-frame-small">
+          <canvas id="monthChart" width="420" height="220"></canvas>
+        </div>
+      </article>
+
+      <article class="panel chart-card chart-card-wide">
+        <div class="panel-heading">
+          <h2>Top recurring terms in titles</h2>
+        </div>
+        <div class="chart-frame chart-frame-wide">
+          <canvas id="termsChart" width="900" height="260"></canvas>
+        </div>
+      </article>
+
+      <article class="panel chart-card chart-card-wide">
+        <div class="panel-heading heading-with-control">
+          <div>
+            <h2>Terms over time</h2>
+            <p class="panel-subtitle">Frequency of selected themes in publication titles by year.</p>
+          </div>
+
+          <select id="termsOverTimeSelect" class="compact-select">
+            <option value="default">Default themes</option>
+            <option value="policy">Policy and regulation</option>
+            <option value="technology">Technology and digitalization</option>
+            <option value="sustainability">Sustainability and energy</option>
+            <option value="inclusion">Inclusion and SMEs</option>
+          </select>
+        </div>
+
+        <div class="chart-frame chart-frame-wide">
+          <canvas id="termsOverTimeChart" width="900" height="260"></canvas>
+        </div>
+      </article>
+    </section>
+
+    <section class="panel results-panel" aria-label="Publication results">
+      <div class="panel-heading results-heading">
+        <div>
+          <h2>Publications</h2>
+          <p id="resultCount">—</p>
+        </div>
+
+        <a class="download-link" href="data/publications_clean.csv" download>
+          Download CSV
+        </a>
+      </div>
+
+      <div id="resultsList" class="results-list"></div>
+
+      <div class="pagination-row">
+        <button id="loadMore" class="primary-button" type="button">Load more</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Built from APEC publication metadata. For analytical use.</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

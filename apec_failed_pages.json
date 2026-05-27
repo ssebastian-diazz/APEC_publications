@@ -1,0 +1,22 @@
+[
+  {
+    "page": 21,
+    "url": "https://www.apec.org/apecapi/publication/getpublications?keyword=&type=&fromDate=&toDate=&sort=&page=21",
+    "error": "HTTP 500. Body preview: {\"message\":\"An error has occurred.\"}"
+  },
+  {
+    "page": 50,
+    "url": "https://www.apec.org/apecapi/publication/getpublications?keyword=&type=&fromDate=&toDate=&sort=&page=50",
+    "error": "HTTP 500. Body preview: {\"message\":\"An error has occurred.\"}"
+  },
+  {
+    "page": 71,
+    "url": "https://www.apec.org/apecapi/publication/getpublications?keyword=&type=&fromDate=&toDate=&sort=&page=71",
+    "error": "HTTP 500. Body preview: {\"message\":\"An error has occurred.\"}"
+  },
+  {
+    "page": 72,
+    "url": "https://www.apec.org/apecapi/publication/getpublications?keyword=&type=&fromDate=&toDate=&sort=&page=72",
+    "error": "HTTP 500. Body preview: {\"message\":\"An error has occurred.\"}"
+  }
+]
