@@ -1,0 +1,27 @@
+/* Patch: make Top recurring terms chart fully readable */
+.chart-card:has(#termsChart) {
+  height: 430px;
+  min-height: 430px;
+  max-height: 430px;
+}
+
+.chart-card:has(#termsChart) .chart-frame {
+  padding-top: 12px;
+  padding-bottom: 18px;
+}
+
+@media (max-width: 1000px) {
+  .chart-card:has(#termsChart) {
+    height: 430px;
+    min-height: 430px;
+    max-height: 430px;
+  }
+}
+
+@media (max-width: 640px) {
+  .chart-card:has(#termsChart) {
+    height: 400px;
+    min-height: 400px;
+    max-height: 400px;
+  }
+}
