@@ -27,7 +27,8 @@ const els = {
   resultsList: document.getElementById("resultsList"),
   loadMore: document.getElementById("loadMore"),
 
-  termsOverTimeSelect: document.getElementById("termsOverTimeSelect")
+  termsOverTimeSelect: document.getElementById("termsOverTimeSelect"),
+  termsYearSelect: document.getElementById("termsYearSelect")
 };
 
 const MONTHS = [
@@ -46,6 +47,9 @@ const MONTHS = [
 ];
 
 const STOPWORDS = new Set([
+
+  "january", "february", "march", "april", "may", "june",
+  "july", "august", "september", "october", "november", "december",
   "the", "and", "for", "with", "from", "into", "through", "within", "towards",
   "toward", "apec", "report", "reports", "project", "workshop", "summary",
   "study", "regional", "region", "economies", "economy", "final", "review",
@@ -116,6 +120,7 @@ async function init() {
   state.summary = summary;
 
   populateFilters();
+  populateTermsYearSelect();
   renderKPIs();
   bindEvents();
   applyFilters();
@@ -132,10 +137,32 @@ function populateFilters() {
 
   for (const year of years) {
     els.yearFilter.appendChild(createOption(year, year));
+
+    if (els.termsYearSelect) {
+      els.termsYearSelect.appendChild(createOption(year, year));
+    }
   }
 
   for (const month of MONTHS) {
     els.monthFilter.appendChild(createOption(month.value, month.label));
+  }
+}
+
+
+function populateTermsYearSelect() {
+  if (!els.termsYearSelect) return;
+
+  const existingValues = new Set(
+    [...els.termsYearSelect.options].map(option => option.value)
+  );
+
+  const years = [...new Set(state.data.map(d => d.year).filter(Boolean))]
+    .sort((a, b) => b - a);
+
+  for (const year of years) {
+    if (!existingValues.has(String(year))) {
+      els.termsYearSelect.appendChild(createOption(year, year));
+    }
   }
 }
 
@@ -184,6 +211,7 @@ function bindEvents() {
     els.sortFilter.value = "newest";
     els.searchInput.value = "";
     if (els.termsOverTimeSelect) els.termsOverTimeSelect.value = "default";
+    if (els.termsYearSelect) els.termsYearSelect.value = "";
     state.visibleCount = 40;
     applyFilters();
   });
@@ -196,6 +224,12 @@ function bindEvents() {
   if (els.termsOverTimeSelect) {
     els.termsOverTimeSelect.addEventListener("change", () => {
       renderTermsOverTimeChart(state.filtered);
+    });
+  }
+
+  if (els.termsYearSelect) {
+    els.termsYearSelect.addEventListener("change", () => {
+      renderTermsChart(state.filtered);
     });
   }
 }
@@ -484,14 +518,23 @@ function renderMonthChart(items) {
 function renderTermsChart(items) {
   destroyChart("terms");
 
-  const terms = extractTopTerms(items, 16);
+  const canvas = document.getElementById("termsChart");
+  if (!canvas) return;
 
-  state.charts.terms = new Chart(document.getElementById("termsChart"), {
+  const selectedYear = els.termsYearSelect?.value ? Number(els.termsYearSelect.value) : null;
+  const sourceItems = selectedYear
+    ? items.filter(item => item.year === selectedYear)
+    : items;
+
+  const limit = selectedYear ? 10 : 16;
+  const terms = extractTopTerms(sourceItems, limit);
+
+  state.charts.terms = new Chart(canvas, {
     type: "bar",
     data: {
       labels: terms.map(d => d.term),
       datasets: [{
-        label: "Frequency",
+        label: selectedYear ? `Frequency in ${selectedYear}` : "Frequency",
         data: terms.map(d => d.count),
         backgroundColor: "#163b73",
         borderRadius: 4
@@ -500,21 +543,29 @@ function renderTermsChart(items) {
     options: baseChartOptions({
       indexAxis: "y",
       plugins: {
-        legend: { display: false }
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: context => {
+              const term = context[0]?.label || "";
+              return selectedYear ? `${term} - ${selectedYear}` : term;
+            }
+          }
+        }
       },
       scales: {
-      x: {
-        beginAtZero: true
-      },
-      y: {
-        ticks: {
-          autoSkip: false,
-          font: {
-            size: 11
+        x: {
+          beginAtZero: true
+        },
+        y: {
+          ticks: {
+            autoSkip: false,
+            font: {
+              size: selectedYear ? 12 : 11
+            }
           }
-    }
-  }
-}
+        }
+      }
     })
   });
 }
@@ -642,12 +693,52 @@ function renderTermsOverTimeChart(items) {
 function extractTopTerms(items, limit = 16) {
   const counts = new Map();
 
+  const allowedShortTerms = new Set([
+    "ai", "esg", "sme", "smes", "msme", "msmes", "5g"
+  ]);
+
+  const canonicalMap = new Map([
+    ["digitalisation", "digitalization"],
+    ["decarbonisation", "decarbonization"],
+    ["smes", "sme"],
+    ["msmes", "msme"],
+    ["technologies", "technology"],
+    ["policies", "policy"],
+    ["regulations", "regulation"],
+    ["standards", "standard"],
+    ["investments", "investment"],
+    ["farmers", "farmer"],
+    ["sustainable", "sustainability"],
+    ["environmental", "environment"],
+    ["financing", "finance"],
+    ["financial", "finance"],
+    ["innovative", "innovation"],
+    ["innovations", "innovation"]
+  ]);
+
   for (const item of items) {
-    const words = normalizeText(item.title)
-      .replace(/[^a-z0-9\s-]/g, " ")
+    const title = normalizeText(item.title)
+      .replace(/&/g, " and ")
+      .replace(/[^a-z0-9\s-]/g, " ");
+
+    const words = title
       .split(/\s+/)
       .map(w => w.trim())
-      .filter(w => w.length >= 4 && !STOPWORDS.has(w));
+      .filter(Boolean)
+      .map(w => canonicalMap.get(w) || w)
+      .filter(w => {
+        const monthTerms = new Set([
+          "january", "february", "march", "april", "may", "june",
+          "july", "august", "september", "october", "november", "december"
+        ]);
+
+        if (monthTerms.has(w)) return false;
+        if (STOPWORDS.has(w)) return false;
+        if (allowedShortTerms.has(w)) return true;
+        if (w.length < 4) return false;
+        if (/^\d+$/.test(w)) return false;
+        return true;
+      });
 
     for (const word of words) {
       counts.set(word, (counts.get(word) || 0) + 1);
@@ -655,7 +746,7 @@ function extractTopTerms(items, limit = 16) {
   }
 
   return [...counts.entries()]
-    .sort((a, b) => b[1] - a[1])
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
     .slice(0, limit)
     .map(([term, count]) => ({ term, count }));
 }
