@@ -158,8 +158,18 @@
           </select>
         </div>
 
-        <div class="chart-frame chart-frame-wide">
+        <div class="chart-frame chart-frame-wide terms-chart-frame">
           <canvas id="termsChart" width="900" height="320"></canvas>
+        </div>
+
+        <div class="term-detail" id="termDetail">
+          <div class="term-detail-header">
+            <span class="term-detail-kicker">Read titles</span>
+            <strong id="termDetailTitle">Select a term</strong>
+            <p id="termDetailMeta">Click a bar above to inspect up to 10 matching publication titles.</p>
+          </div>
+
+          <div class="term-detail-list" id="termDetailList"></div>
         </div>
       </article>
 
