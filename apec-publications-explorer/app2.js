@@ -529,6 +529,11 @@ function renderTermsChart(items) {
   const limit = selectedYear ? 10 : 16;
   const terms = extractTopTerms(sourceItems, limit);
 
+  const selectedTermStillVisible = terms.some(d => d.term === state.selectedTopTerm);
+  if (!selectedTermStillVisible) {
+    state.selectedTopTerm = null;
+  }
+
   state.charts.terms = new Chart(canvas, {
     type: "bar",
     data: {
@@ -537,11 +542,49 @@ function renderTermsChart(items) {
         label: selectedYear ? `Frequency in ${selectedYear}` : "Frequency",
         data: terms.map(d => d.count),
         backgroundColor: "#163b73",
-        borderRadius: 4
+        hoverBackgroundColor: "#1d4f91",
+        borderRadius: 3,
+        barThickness: selectedYear ? 12 : 10,
+        maxBarThickness: 14,
+        categoryPercentage: 0.72,
+        barPercentage: 0.78
       }]
     },
     options: baseChartOptions({
       indexAxis: "y",
+      interaction: {
+        mode: "nearest",
+        axis: "y",
+        intersect: false
+      },
+      onHover: (event, elements, chart) => {
+        const points = chart.getElementsAtEventForMode(
+          event,
+          "nearest",
+          { intersect: false, axis: "y" },
+          true
+        );
+
+        chart.canvas.style.cursor = points.length ? "pointer" : "default";
+      },
+      onClick: (event, elements, chart) => {
+        const points = chart.getElementsAtEventForMode(
+          event,
+          "nearest",
+          { intersect: false, axis: "y" },
+          true
+        );
+
+        if (!points.length) return;
+
+        const index = points[0].index;
+        const term = terms[index]?.term;
+
+        if (!term) return;
+
+        state.selectedTopTerm = term;
+        renderTermTitlesPanel(sourceItems, term, selectedYear);
+      },
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -549,7 +592,8 @@ function renderTermsChart(items) {
             title: context => {
               const term = context[0]?.label || "";
               return selectedYear ? `${term} - ${selectedYear}` : term;
-            }
+            },
+            afterBody: () => "Click to read matching titles"
           }
         }
       },
@@ -568,6 +612,143 @@ function renderTermsChart(items) {
       }
     })
   });
+
+  if (state.selectedTopTerm) {
+    renderTermTitlesPanel(sourceItems, state.selectedTopTerm, selectedYear);
+  } else {
+    renderTermTitlesPanel(sourceItems, null, selectedYear);
+  }
+}
+
+function tokenizeTitleForTerms(title) {
+  const allowedShortTerms = new Set([
+    "ai", "esg", "sme", "smes", "msme", "msmes", "5g"
+  ]);
+
+  const canonicalMap = new Map([
+    ["digitalisation", "digitalization"],
+    ["decarbonisation", "decarbonization"],
+    ["smes", "sme"],
+    ["msmes", "msme"],
+    ["technologies", "technology"],
+    ["policies", "policy"],
+    ["regulations", "regulation"],
+    ["standards", "standard"],
+    ["investments", "investment"],
+    ["farmers", "farmer"],
+    ["sustainable", "sustainability"],
+    ["environmental", "environment"],
+    ["financing", "finance"],
+    ["financial", "finance"],
+    ["innovative", "innovation"],
+    ["innovations", "innovation"]
+  ]);
+
+  const monthTerms = new Set([
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december"
+  ]);
+
+  return normalizeText(title)
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9\s-]/g, " ")
+    .split(/\s+/)
+    .map(w => w.trim())
+    .filter(Boolean)
+    .map(w => canonicalMap.get(w) || w)
+    .filter(w => {
+      if (monthTerms.has(w)) return false;
+      if (STOPWORDS.has(w)) return false;
+      if (allowedShortTerms.has(w)) return true;
+      if (w.length < 4) return false;
+      if (/^\d+$/.test(w)) return false;
+      return true;
+    });
+}
+
+function extractTopTerms(items, limit = 16) {
+  const counts = new Map();
+
+  for (const item of items) {
+    const words = tokenizeTitleForTerms(item.title);
+
+    for (const word of words) {
+      counts.set(word, (counts.get(word) || 0) + 1);
+    }
+  }
+
+  return [...counts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, limit)
+    .map(([term, count]) => ({ term, count }));
+}
+
+function getTermMatches(items, term, limit = 10) {
+  if (!term) return [];
+
+  const matches = [];
+
+  for (const item of items) {
+    const tokens = tokenizeTitleForTerms(item.title);
+    const occurrences = tokens.filter(token => token === term).length;
+
+    if (occurrences > 0) {
+      matches.push({
+        occurrences,
+        title: item.title,
+        type: item.type,
+        date: item.date,
+        url: item.url
+      });
+    }
+  }
+
+  return matches
+    .sort((a, b) => b.occurrences - a.occurrences || String(a.title).localeCompare(String(b.title)))
+    .slice(0, limit);
+}
+
+function renderTermTitlesPanel(items, term, selectedYear) {
+  const panel = document.getElementById("termDetail");
+  const titleEl = document.getElementById("termDetailTitle");
+  const metaEl = document.getElementById("termDetailMeta");
+  const listEl = document.getElementById("termDetailList");
+
+  if (!panel || !titleEl || !metaEl || !listEl) return;
+
+  if (!term) {
+    titleEl.textContent = "Select a term";
+    metaEl.textContent = "Click a bar above to inspect up to 10 matching publication titles.";
+    listEl.innerHTML = "";
+    panel.classList.remove("active");
+    return;
+  }
+
+  const matches = getTermMatches(items, term, 10);
+  const yearLabel = selectedYear ? ` in ${selectedYear}` : "";
+
+  titleEl.textContent = `Titles containing “${term}”${yearLabel}`;
+  metaEl.textContent = `${matches.length} title${matches.length === 1 ? "" : "s"} shown. Matches use the same normalized title terms as the chart.`;
+
+  if (!matches.length) {
+    listEl.innerHTML = `<div class="term-detail-empty">No matching titles found for this term under the current filters.</div>`;
+    panel.classList.add("active");
+    return;
+  }
+
+  listEl.innerHTML = matches.map((item, index) => `
+    <article class="term-title-item">
+      <div>
+        <span class="term-title-index">${index + 1}</span>
+        <strong>${escapeHtml(item.title)}</strong>
+        <p>${escapeHtml(item.type || "Unknown")} · ${escapeHtml(item.date || "No date")} · ${item.occurrences} occurrence${item.occurrences === 1 ? "" : "s"}</p>
+      </div>
+
+      <a href="${escapeAttribute(item.url)}" target="_blank" rel="noopener">Open</a>
+    </article>
+  `).join("");
+
+  panel.classList.add("active");
 }
 
 function getTermGroups() {
