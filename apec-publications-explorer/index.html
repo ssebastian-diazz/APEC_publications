@@ -6,7 +6,7 @@
 
   <title>APEC Publications Explorer</title>
 
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles2.css" />
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -146,12 +146,20 @@
         </div>
       </article>
 
-      <article class="panel chart-card chart-card-wide">
-        <div class="panel-heading">
-          <h2>Top recurring terms in titles</h2>
+      <article class="panel chart-card chart-card-wide terms-card">
+        <div class="panel-heading heading-with-control">
+          <div>
+            <h2>Top recurring terms in titles</h2>
+            <p class="panel-subtitle">Most frequent title terms in the selected year or current filter.</p>
+          </div>
+
+          <select id="termsYearSelect" class="compact-select">
+            <option value="">All years</option>
+          </select>
         </div>
+
         <div class="chart-frame chart-frame-wide">
-          <canvas id="termsChart" width="900" height="260"></canvas>
+          <canvas id="termsChart" width="900" height="320"></canvas>
         </div>
       </article>
 
@@ -201,6 +209,6 @@
     <p>Built from APEC publication metadata. For analytical use.</p>
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app2.js"></script>
 </body>
 </html>
