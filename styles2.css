@@ -577,3 +577,427 @@ button,
     width: fit-content;
   }
 }
+
+
+/* Patch: Read titles panel for top recurring terms */
+.term-detail {
+  margin: 0 14px 14px;
+  border: 1px solid var(--line-soft);
+  background: #f8fbff;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.term-detail-header {
+  display: grid;
+  gap: 3px;
+  margin-bottom: 10px;
+}
+
+.term-detail-kicker {
+  width: fit-content;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--blue);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.term-detail-header strong {
+  color: var(--ink);
+  font-size: 0.94rem;
+  letter-spacing: -0.01em;
+}
+
+.term-detail-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.term-detail-list {
+  display: grid;
+  gap: 8px;
+}
+
+.term-title-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: start;
+  border-top: 1px solid var(--line-soft);
+  padding-top: 8px;
+}
+
+.term-title-item strong {
+  color: var(--ink);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.term-title-item p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.term-title-item a {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--blue);
+  border-radius: 999px;
+  padding: 6px 10px;
+  text-decoration: none;
+  font-size: 0.74rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.term-title-item a:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.term-title-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-right: 6px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.term-detail-empty {
+  color: var(--muted);
+  font-size: 0.82rem;
+  padding-top: 6px;
+}
+
+.terms-card {
+  height: 620px;
+  min-height: 620px;
+  max-height: 620px;
+}
+
+@media (max-width: 1000px) {
+  .terms-card {
+    height: 650px;
+    min-height: 650px;
+    max-height: 650px;
+  }
+}
+
+@media (max-width: 640px) {
+  .terms-card {
+    height: 720px;
+    min-height: 720px;
+    max-height: 720px;
+  }
+
+  .term-title-item {
+    grid-template-columns: 1fr;
+  }
+
+  .term-title-item a {
+    width: fit-content;
+  }
+}
+
+
+/* Patch: keep Top terms chart and Read titles as separate sections */
+.terms-card {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.terms-card .panel-heading {
+  flex: 0 0 auto;
+}
+
+.terms-chart-frame {
+  flex: 0 0 330px !important;
+  height: 330px !important;
+  min-height: 330px !important;
+  max-height: 330px !important;
+  padding: 12px 14px 16px !important;
+}
+
+.terms-chart-frame canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: block !important;
+}
+
+.term-detail {
+  margin: 0 14px 16px;
+  border: 1px solid var(--line-soft);
+  background: #f8fbff;
+  border-radius: 14px;
+  padding: 12px;
+  display: block;
+}
+
+.term-detail-header {
+  display: grid;
+  gap: 3px;
+  margin-bottom: 10px;
+}
+
+.term-detail-kicker {
+  width: fit-content;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--blue);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.term-detail-header strong {
+  color: var(--ink);
+  font-size: 0.94rem;
+  letter-spacing: -0.01em;
+}
+
+.term-detail-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.term-detail-list {
+  display: grid;
+  gap: 8px;
+}
+
+.term-title-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: start;
+  border-top: 1px solid var(--line-soft);
+  padding-top: 8px;
+}
+
+.term-title-item strong {
+  color: var(--ink);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.term-title-item p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.term-title-item a {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--blue);
+  border-radius: 999px;
+  padding: 6px 10px;
+  text-decoration: none;
+  font-size: 0.74rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.term-title-item a:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.term-title-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-right: 6px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.term-detail-empty {
+  color: var(--muted);
+  font-size: 0.82rem;
+  padding-top: 6px;
+}
+
+@media (max-width: 640px) {
+  .terms-chart-frame {
+    flex-basis: 300px !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
+  }
+
+  .term-title-item {
+    grid-template-columns: 1fr;
+  }
+
+  .term-title-item a {
+    width: fit-content;
+  }
+}
+
+
+/* Patch: Read titles below Top recurring terms chart */
+.terms-card {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+.terms-card .chart-frame {
+  flex: 0 0 330px !important;
+  height: 330px !important;
+  min-height: 330px !important;
+  max-height: 330px !important;
+}
+
+.terms-card .chart-frame canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  display: block !important;
+}
+
+.term-detail {
+  margin: 0 14px 16px;
+  border: 1px solid var(--line-soft);
+  background: #f8fbff;
+  border-radius: 14px;
+  padding: 12px;
+  display: block;
+}
+
+.term-detail-header {
+  display: grid;
+  gap: 3px;
+  margin-bottom: 10px;
+}
+
+.term-detail-kicker {
+  width: fit-content;
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--blue);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.term-detail-header strong {
+  color: var(--ink);
+  font-size: 0.94rem;
+}
+
+.term-detail-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.term-detail-list {
+  display: grid;
+  gap: 8px;
+}
+
+.term-title-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: start;
+  border-top: 1px solid var(--line-soft);
+  padding-top: 8px;
+}
+
+.term-title-item strong {
+  color: var(--ink);
+  font-size: 0.84rem;
+  line-height: 1.35;
+}
+
+.term-title-item p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.term-title-item a {
+  border: 1px solid var(--line);
+  background: #ffffff;
+  color: var(--blue);
+  border-radius: 999px;
+  padding: 6px 10px;
+  text-decoration: none;
+  font-size: 0.74rem;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+.term-title-item a:hover {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.term-title-index {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-right: 6px;
+  border-radius: 999px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.term-detail-empty {
+  color: var(--muted);
+  font-size: 0.82rem;
+  padding-top: 6px;
+}
+
+@media (max-width: 640px) {
+  .terms-card .chart-frame {
+    flex-basis: 300px !important;
+    height: 300px !important;
+    min-height: 300px !important;
+    max-height: 300px !important;
+  }
+
+  .term-title-item {
+    grid-template-columns: 1fr;
+  }
+
+  .term-title-item a {
+    width: fit-content;
+  }
+}
